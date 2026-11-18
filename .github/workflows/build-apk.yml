@@ -1,0 +1,38 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm install
+      - name: Prepare web files
+        run: mkdir -p www && cp index.html www/index.html
+      - run: npx cap add android
+      - run: npx cap sync android
+      - name: Use our app icon
+        run: |
+          R=android/app/src/main/res
+          rm -rf $R/mipmap-anydpi-v26
+          for d in $R/mipmap-*dpi; do
+            cp icon.png $d/ic_launcher.png
+            cp icon.png $d/ic_launcher_round.png
+            cp icon.png $d/ic_launcher_foreground.png
+          done
+      - name: Build APK
+        run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
+      - name: Publish APK to Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk SteelDesign.apk
+          gh release create "v${{ github.run_number }}" SteelDesign.apk --title "Steel Design v${{ github.run_number }}" --notes "Android app. Download SteelDesign.apk and install."
