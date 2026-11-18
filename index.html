@@ -101,6 +101,8 @@ footer{color:var(--sub);font-size:.72rem;text-align:center;margin-top:24px;}
 .hero.is3d .sheet figcaption{background:linear-gradient(180deg,#0f2438,#091827);border-top:1px solid #3b5d78}
 .hero.is3d .sheet figcaption b{color:#fff}
 .hero.is3d .sheet figcaption span{color:#8fb0cc}
+/* portrait fit: let the header shrink to the screen instead of being cut off */
+@media(max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}.hero-text{min-width:0}.hero-by{display:flex;flex-wrap:wrap;align-items:center;row-gap:2px}.hero-by span{flex:0 0 100%}.hero-by b{white-space:normal}}
 </style>
 </head>
 <body>
